@@ -9,7 +9,7 @@ import torch.backends.cudnn as cudnn
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from datasets.dataset_synapse import Synapse_dataset
+from datasets.dataset_synapse import LiTS_dataset, Synapse_dataset
 from utils import test_single_volume
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
@@ -43,6 +43,7 @@ args = parser.parse_args()
 
 
 def inference(args, model, test_save_path=None):
+    # db_test = args.Dataset(base_dir=args.volume_path, split="test_vol", list_dir=args.list_dir)
     db_test = args.Dataset(base_dir=args.volume_path, split="test_vol", list_dir=args.list_dir)
     testloader = DataLoader(db_test, batch_size=1, shuffle=False, num_workers=1)
     logging.info("{} test iterations per epoch".format(len(testloader)))
@@ -83,6 +84,13 @@ if __name__ == "__main__":
             'volume_path': '../data/Synapse/test_vol_h5',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 9,
+            'z_spacing': 1,
+        },
+        'LiTS': {
+            'Dataset': LiTS_dataset,
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 3,
             'z_spacing': 1,
         },
     }

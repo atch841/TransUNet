@@ -36,11 +36,12 @@ class DiceLoss(nn.Module):
         if weight is None:
             weight = [1] * self.n_classes
         assert inputs.size() == target.size(), 'predict {} & target {} shape do not match'.format(inputs.size(), target.size())
-        class_wise_dice = []
+        assert inputs.max() <= 1 and inputs.min() >= 0 and target.max() <= 1 and target.min() >= 0, '{} {} {} {}'.format(inputs.max(), inputs.min(), target.max(), target.min())
+        # class_wise_dice = []
         loss = 0.0
         for i in range(0, self.n_classes):
             dice = self._dice_loss(inputs[:, i], target[:, i])
-            class_wise_dice.append(1.0 - dice.item())
+            # class_wise_dice.append(1.0 - dice.item())
             loss += dice * weight[i]
         return loss / self.n_classes
 
@@ -79,8 +80,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                     pred = out
                 prediction[ind] = pred
     else:
-        input = torch.from_numpy(image).unsqueeze(
-            0).unsqueeze(0).float().cuda()
+        input = torch.from_numpy(image).unsqueeze(0).unsqueeze(0).float().cuda()
         net.eval()
         with torch.no_grad():
             out = torch.argmax(torch.softmax(net(input), dim=1), dim=1).squeeze(0)

@@ -1,11 +1,12 @@
 import os
 import random
-import h5py
+# import h5py
 import numpy as np
 import torch
 from scipy import ndimage
 from scipy.ndimage.interpolation import zoom
 from torch.utils.data import Dataset
+import SimpleITK as sitk
 
 
 def random_rot_flip(image, label):
@@ -72,4 +73,37 @@ class Synapse_dataset(Dataset):
         if self.transform:
             sample = self.transform(sample)
         sample['case_name'] = self.sample_list[idx].strip('\n')
+        return sample
+
+class LiTS_dataset(Dataset):
+    def __init__(self, base_dir, split, transform=None):
+        self.transform = transform  # using transform in torch!
+        self.split = split
+        self.sample_list_ct = os.listdir(base_dir + 'ct/')
+        self.sample_list_seg = os.listdir(base_dir + 'seg/')
+        self.data_dir = base_dir
+
+    def __len__(self):
+        return len(self.sample_list_ct)
+
+    def __getitem__(self, idx):
+        if self.split == "train":
+            image = np.load(self.data_dir + 'ct/' +  self.sample_list_ct[idx])
+            label = np.load(self.data_dir + 'seg/' +  self.sample_list_seg[idx])
+        else:
+            ct = sitk.ReadImage(self.data_dir + 'ct/' + self.sample_list_ct[idx], sitk.sitkInt16)
+            seg = sitk.ReadImage(self.data_dir + 'seg/' + self.sample_list_seg[idx], sitk.sitkUInt8)
+            image = sitk.GetArrayFromImage(ct)
+            label = sitk.GetArrayFromImage(seg)
+
+            image = image.astype(np.float32)
+            image = image / 200
+
+            image = ndimage.zoom(image, (1, 0.5, 0.5), order=3)
+            label = ndimage.zoom(label, (1, 0.5, 0.5), order=0)
+
+        sample = {'image': image, 'label': label}
+        if self.transform:
+            sample = self.transform(sample)
+        sample['case_name'] = self.sample_list_ct[idx][:-4]
         return sample
