@@ -76,12 +76,13 @@ class Synapse_dataset(Dataset):
         return sample
 
 class LiTS_dataset(Dataset):
-    def __init__(self, base_dir, split, transform=None):
+    def __init__(self, base_dir, split, transform=None, tumor_only=False):
         self.transform = transform  # using transform in torch!
         self.split = split
         self.sample_list_ct = os.listdir(base_dir + 'ct/')
         self.sample_list_seg = os.listdir(base_dir + 'seg/')
         self.data_dir = base_dir
+        self.tumor_only = tumor_only
 
     def __len__(self):
         return len(self.sample_list_ct)
@@ -102,8 +103,19 @@ class LiTS_dataset(Dataset):
             image = ndimage.zoom(image, (1, 0.5, 0.5), order=3)
             label = ndimage.zoom(label, (1, 0.5, 0.5), order=0)
 
+        if self.tumor_only:
+            label = (label == 2).astype('float32')
+
         sample = {'image': image, 'label': label}
         if self.transform:
             sample = self.transform(sample)
         sample['case_name'] = self.sample_list_ct[idx][:-4]
         return sample
+
+class LiTS_tumor_dataset(Dataset):
+    def __init__(self, base_dir, split, transform=None):
+        self.dataset = LiTS_dataset(base_dir, split, transform, tumor_only=True)
+    def __len__(self):
+        return len(self.dataset)
+    def __getitem__(self, idx):
+        return self.dataset[idx]

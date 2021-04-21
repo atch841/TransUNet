@@ -66,6 +66,11 @@ if __name__ == "__main__":
             'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
         },
+        'LiTS_tumor': {
+            'root_path': '/home/viplab/nas/train5/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+        },
     }
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.root_path = dataset_config[dataset_name]['root_path']
@@ -94,5 +99,5 @@ if __name__ == "__main__":
     net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net.load_from(weights=np.load(config_vit.pretrained_path))
 
-    trainer = {'Synapse': trainer_synapse, 'LiTS': trainer_synapse}
+    trainer = {'Synapse': trainer_synapse, 'LiTS': trainer_synapse, 'LiTS_tumor': trainer_synapse}
     trainer[dataset_name](args, net, snapshot_path)

@@ -9,7 +9,7 @@ import torch.backends.cudnn as cudnn
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from datasets.dataset_synapse import LiTS_dataset, Synapse_dataset
+from datasets.dataset_synapse import LiTS_dataset, LiTS_tumor_dataset, Synapse_dataset
 from utils import test_single_volume
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
@@ -91,6 +91,13 @@ if __name__ == "__main__":
             'volume_path': '/home/viplab/nas/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
+            'z_spacing': 1,
+        },
+        'LiTS_tumor': {
+            'Dataset': LiTS_tumor_dataset,
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
             'z_spacing': 1,
         },
     }

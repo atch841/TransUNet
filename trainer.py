@@ -28,8 +28,16 @@ def trainer_synapse(args, model, snapshot_path):
     # db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
     #                            transform=transforms.Compose(
     #                                [RandomGenerator(output_size=[args.img_size, args.img_size])]))
-    db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+    if args.dataset == 'LiTS':
+        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
+    elif args.dataset == 'LiTS_tumor':
+        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+                                   [RandomGenerator(output_size=[args.img_size, args.img_size])]),
+                                   tumor_only=True)
+    else:
+        raise NotImplementedError('dataset not found!')
+    
     print("The length of train set is: {}".format(len(db_train)))
 
     def worker_init_fn(worker_id):
