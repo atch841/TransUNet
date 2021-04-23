@@ -1,5 +1,8 @@
 import argparse
+from networks.denseunet import DenseUNet
+from datasets.dataset_synapse import LiTS_dataset, LiTS_tumor_dataset
 import logging
+from networks.unet_model import UNet
 import os
 import random
 import numpy as np
@@ -39,10 +42,15 @@ parser.add_argument('--vit_name', type=str,
                     default='R50-ViT-B_16', help='select one vit model')
 parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
+parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet'],
+                    help='model to use')
+parser.add_argument('--is_pretrain', type=bool, default=False,
+                    help='load pretrained model or not')
 args = parser.parse_args()
 
 
 if __name__ == "__main__":
+    print("TRAIN")
     if not args.deterministic:
         cudnn.benchmark = True
         cudnn.deterministic = False
@@ -62,22 +70,31 @@ if __name__ == "__main__":
             'num_classes': 9,
         },
         'LiTS': {
+            'Dataset': LiTS_dataset,
             'root_path': '/home/viplab/nas/train5/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
+            'z_spacing': 1,
         },
         'LiTS_tumor': {
+            'Dataset': LiTS_tumor_dataset,
             'root_path': '/home/viplab/nas/train5/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
+            'z_spacing': 1,
         },
     }
+    args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.root_path = dataset_config[dataset_name]['root_path']
+    args.volume_path = dataset_config[dataset_name]['volume_path']
     args.list_dir = dataset_config[dataset_name]['list_dir']
-    args.is_pretrain = True
-    args.exp = 'TU_' + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
+    args.z_spacing = dataset_config[dataset_name]['z_spacing']
+    # args.is_pretrain = True
+    args.exp = '{}_'.format(args.model) + dataset_name + str(args.img_size)
+    snapshot_path = "../model/{}/{}".format(args.exp, args.model)
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
@@ -91,13 +108,33 @@ if __name__ == "__main__":
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
-    config_vit = CONFIGS_ViT_seg[args.vit_name]
-    config_vit.n_classes = args.num_classes
-    config_vit.n_skip = args.n_skip
-    if args.vit_name.find('R50') != -1:
-        config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net.load_from(weights=np.load(config_vit.pretrained_path))
+    if args.model == 'TU':
+        config_vit = CONFIGS_ViT_seg[args.vit_name]
+        config_vit.n_classes = args.num_classes
+        config_vit.n_skip = args.n_skip
+        if args.vit_name.find('R50') != -1:
+            config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
+        net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+        if args.is_pretrain:
+            print('loading pretrain')
+            net.load_from(weights=np.load(config_vit.pretrained_path))
+    elif args.model == 'UNet':
+        net = UNet(1, args.num_classes).cuda()
+        if args.is_pretrain:
+            print('loading pretrain')
+            state_dict = torch.load('/home/viplab/nas/unet_carvana_scale1_epoch5.pth')
+            model_dict = net.state_dict()
+            pretrained_state = { k:v for k,v in state_dict.items() \
+                                if k in model_dict and v.size() == model_dict[k].size() }
+            model_dict.update(pretrained_state)
+            net.load_state_dict(model_dict)
+    elif args.model == 'denseunet':
+        if args.is_pretrain:
+            net = DenseUNet(args.num_classes, pretrained_encoder_uri='https://download.pytorch.org/models/densenet121-a639ec97.pth').cuda()
+        else:
+            net = DenseUNet(args.num_classes).cuda()
+    else:
+        raise NotImplementedError('model not found!')
 
     trainer = {'Synapse': trainer_synapse, 'LiTS': trainer_synapse, 'LiTS_tumor': trainer_synapse}
     trainer[dataset_name](args, net, snapshot_path)

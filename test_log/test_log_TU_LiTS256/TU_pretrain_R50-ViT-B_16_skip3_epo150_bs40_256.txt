@@ -1,0 +1,73 @@
+[02:23:24.962] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_dataset'>, base_lr=0.01, batch_size=40, dataset='LiTS', deterministic=1, exp='TU_LiTS256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=3, seed=1234, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[02:23:24.962] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs40_256
+[02:24:12.327] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_dataset'>, base_lr=0.01, batch_size=40, dataset='LiTS', deterministic=1, exp='TU_LiTS256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=3, seed=1234, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[02:24:12.327] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs40_256
+[02:24:12.386] 27 test iterations per epoch
+[02:24:27.134] idx 0 case volume-0 mean_dice 0.781892 mean_hd95 11.067519
+[02:24:40.635] idx 1 case volume-101 mean_dice 0.901858 mean_hd95 3.286298
+[02:29:18.416] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_dataset'>, base_lr=0.01, batch_size=40, dataset='LiTS', deterministic=1, exp='TU_LiTS256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=3, seed=1234, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[02:29:18.416] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs40_256
+[02:29:18.418] 27 test iterations per epoch
+[02:29:32.442] idx 0 case volume-0 mean_dice 0.781892 mean_hd95 11.067519
+[02:29:45.830] idx 1 case volume-101 mean_dice 0.901858 mean_hd95 3.286298
+[02:29:56.302] idx 2 case volume-103 mean_dice 0.813257 mean_hd95 5.535534
+[02:30:05.907] idx 3 case volume-105 mean_dice 0.988306 mean_hd95 1.000000
+[02:30:18.553] idx 4 case volume-108 mean_dice 0.786675 mean_hd95 44.785330
+[02:30:30.126] idx 5 case volume-109 mean_dice 0.805503 mean_hd95 6.447933
+[02:30:41.090] idx 6 case volume-110 mean_dice 0.760067 mean_hd95 8.728583
+[02:30:54.525] idx 7 case volume-111 mean_dice 0.734966 mean_hd95 7.022681
+[02:31:05.027] idx 8 case volume-113 mean_dice 0.767669 mean_hd95 5.683300
+[02:31:16.425] idx 9 case volume-17 mean_dice 0.889970 mean_hd95 19.551426
+[02:31:27.585] idx 10 case volume-19 mean_dice 0.746784 mean_hd95 6.895767
+[02:31:38.019] idx 11 case volume-2 mean_dice 0.827894 mean_hd95 3.719865
+[02:31:48.000] idx 12 case volume-22 mean_dice 0.794493 mean_hd95 11.778036
+[02:32:00.448] idx 13 case volume-24 mean_dice 0.716948 mean_hd95 58.756310
+[02:32:12.714] idx 14 case volume-3 mean_dice 0.563394 mean_hd95 38.224692
+[02:32:19.630] idx 15 case volume-44 mean_dice 0.731969 mean_hd95 7.739947
+[02:32:34.979] idx 16 case volume-55 mean_dice 0.470896 mean_hd95 103.133963
+[02:32:47.979] idx 17 case volume-56 mean_dice 0.908461 mean_hd95 5.985024
+[02:33:02.564] idx 18 case volume-64 mean_dice 0.949928 mean_hd95 3.072526
+[02:33:15.471] idx 19 case volume-67 mean_dice 0.482734 mean_hd95 18.312516
+[02:33:26.631] idx 20 case volume-68 mean_dice 0.786324 mean_hd95 32.315209
+[02:33:36.738] idx 21 case volume-70 mean_dice 0.868958 mean_hd95 11.362887
+[02:33:50.151] idx 22 case volume-76 mean_dice 0.894329 mean_hd95 4.449490
+[02:34:01.995] idx 23 case volume-77 mean_dice 0.535344 mean_hd95 51.373058
+[02:34:14.487] idx 24 case volume-79 mean_dice 0.735958 mean_hd95 9.280231
+[02:34:24.672] idx 25 case volume-82 mean_dice 0.903077 mean_hd95 45.111843
+[02:34:38.323] idx 26 case volume-86 mean_dice 0.516295 mean_hd95 57.730348
+[02:34:38.352] Mean class 1 mean_dice 0.947972 mean_hd95 8.118532
+[02:34:38.352] Mean class 2 mean_dice 0.582691 mean_hd95 35.018528
+[02:34:38.352] Testing performance in best val model: mean_dice : 0.765331 mean_hd95 : 21.568530
+[03:05:39.167] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_dataset'>, base_lr=0.01, batch_size=40, dataset='LiTS', deterministic=1, exp='TU_LiTS256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=3, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[03:05:39.167] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs40_256
+[03:05:39.169] 27 test iterations per epoch
+[03:05:53.043] idx 0 case volume-0 mean_dice 0.783797 mean_hd95 15.711940
+[03:06:06.504] idx 1 case volume-101 mean_dice 0.909736 mean_hd95 3.285042
+[03:06:17.064] idx 2 case volume-103 mean_dice 0.816577 mean_hd95 5.373490
+[03:06:26.588] idx 3 case volume-105 mean_dice 0.988097 mean_hd95 1.000000
+[03:06:39.243] idx 4 case volume-108 mean_dice 0.786453 mean_hd95 41.240278
+[03:06:50.714] idx 5 case volume-109 mean_dice 0.813306 mean_hd95 12.660490
+[03:07:01.622] idx 6 case volume-110 mean_dice 0.765615 mean_hd95 8.503818
+[03:07:14.989] idx 7 case volume-111 mean_dice 0.743681 mean_hd95 5.500000
+[03:07:25.516] idx 8 case volume-113 mean_dice 0.761683 mean_hd95 7.397190
+[03:07:36.932] idx 9 case volume-17 mean_dice 0.886959 mean_hd95 52.599333
+[03:07:47.998] idx 10 case volume-19 mean_dice 0.760495 mean_hd95 6.924429
+[03:07:58.339] idx 11 case volume-2 mean_dice 0.832448 mean_hd95 4.370829
+[03:08:08.195] idx 12 case volume-22 mean_dice 0.794135 mean_hd95 11.455966
+[03:08:20.437] idx 13 case volume-24 mean_dice 0.735330 mean_hd95 36.935072
+[03:08:32.635] idx 14 case volume-3 mean_dice 0.662733 mean_hd95 38.021910
+[03:08:39.459] idx 15 case volume-44 mean_dice 0.731649 mean_hd95 7.581139
+[03:08:54.733] idx 16 case volume-55 mean_dice 0.471351 mean_hd95 103.476079
+[03:09:07.630] idx 17 case volume-56 mean_dice 0.909649 mean_hd95 6.191147
+[03:09:22.119] idx 18 case volume-64 mean_dice 0.954991 mean_hd95 2.914214
+[03:09:34.874] idx 19 case volume-67 mean_dice 0.482607 mean_hd95 24.241677
+[03:09:45.864] idx 20 case volume-68 mean_dice 0.821877 mean_hd95 33.090977
+[03:09:55.944] idx 21 case volume-70 mean_dice 0.879190 mean_hd95 10.754840
+[03:10:09.258] idx 22 case volume-76 mean_dice 0.898568 mean_hd95 4.038844
+[03:10:20.907] idx 23 case volume-77 mean_dice 0.505281 mean_hd95 51.557104
+[03:10:33.309] idx 24 case volume-79 mean_dice 0.745828 mean_hd95 8.465609
+[03:10:43.462] idx 25 case volume-82 mean_dice 0.890805 mean_hd95 46.726634
+[03:10:57.022] idx 26 case volume-86 mean_dice 0.523333 mean_hd95 58.969798
+[03:10:57.052] Mean class 1 mean_dice 0.948676 mean_hd95 7.908713
+[03:10:57.052] Mean class 2 mean_dice 0.596226 mean_hd95 37.201498
+[03:10:57.052] Testing performance in best val model: mean_dice : 0.772451 mean_hd95 : 22.555105

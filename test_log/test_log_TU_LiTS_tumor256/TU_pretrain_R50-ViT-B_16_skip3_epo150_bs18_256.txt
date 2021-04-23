@@ -1,0 +1,35 @@
+[09:13:18.224] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[09:13:18.224] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs18_256
+[09:13:18.228] 27 test iterations per epoch
+[09:13:35.789] idx 0 case volume-0 mean_dice 0.591778 mean_hd95 19.300039
+[09:13:50.755] idx 1 case volume-101 mean_dice 0.853542 mean_hd95 3.000000
+[09:14:02.697] idx 2 case volume-103 mean_dice 0.696887 mean_hd95 10.000000
+[09:14:13.289] idx 3 case volume-105 mean_dice 1.000000 mean_hd95 0.000000
+[09:14:27.145] idx 4 case volume-108 mean_dice 0.768771 mean_hd95 3.741657
+[09:14:40.060] idx 5 case volume-109 mean_dice 0.741144 mean_hd95 4.472136
+[09:14:52.553] idx 6 case volume-110 mean_dice 0.596863 mean_hd95 5.830952
+[09:15:07.629] idx 7 case volume-111 mean_dice 0.420756 mean_hd95 49.557038
+[09:15:19.352] idx 8 case volume-113 mean_dice 0.573065 mean_hd95 10.049876
+[09:15:32.211] idx 9 case volume-17 mean_dice 0.848608 mean_hd95 50.269271
+[09:15:44.724] idx 10 case volume-19 mean_dice 0.640455 mean_hd95 5.385165
+[09:15:56.330] idx 11 case volume-2 mean_dice 0.636865 mean_hd95 3.741657
+[09:16:08.071] idx 12 case volume-22 mean_dice 0.754664 mean_hd95 15.043241
+[09:16:21.900] idx 13 case volume-24 mean_dice 0.223176 mean_hd95 122.622996
+[09:16:35.602] idx 14 case volume-3 mean_dice 0.477250 mean_hd95 73.146422
+[09:16:43.621] idx 15 case volume-44 mean_dice 0.563373 mean_hd95 13.017282
+[09:17:00.594] idx 16 case volume-55 mean_dice 0.000000 mean_hd95 197.961107
+[09:17:15.162] idx 17 case volume-56 mean_dice 0.786744 mean_hd95 11.874342
+[09:17:31.217] idx 18 case volume-64 mean_dice 0.945827 mean_hd95 2.449490
+[09:17:42.982] idx 19 case volume-67 mean_dice 0.000000 mean_hd95 0.000000
+[09:17:55.497] idx 20 case volume-68 mean_dice 0.767791 mean_hd95 56.048193
+[09:18:06.823] idx 21 case volume-70 mean_dice 0.791973 mean_hd95 4.358899
+[09:18:22.032] idx 22 case volume-76 mean_dice 0.846373 mean_hd95 5.099020
+[09:18:35.185] idx 23 case volume-77 mean_dice 0.131588 mean_hd95 63.581442
+[09:18:49.680] idx 24 case volume-79 mean_dice 0.642051 mean_hd95 8.306624
+[09:19:00.574] idx 25 case volume-82 mean_dice 0.895392 mean_hd95 47.339202
+[09:19:15.465] idx 26 case volume-86 mean_dice 0.303625 mean_hd95 13.152946
+[09:19:15.500] Mean class 1 mean_dice 0.611058 mean_hd95 29.605518
+[09:19:15.500] Testing performance in best val model: mean_dice : 0.611058 mean_hd95 : 29.605518
+[09:35:43.521] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[09:35:43.521] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs18_256
+[09:35:43.523] 27 test iterations per epoch
