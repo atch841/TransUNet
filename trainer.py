@@ -32,7 +32,7 @@ def trainer_synapse(args, model, snapshot_path):
     if args.dataset == 'LiTS':
         db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
-    elif args.dataset == 'LiTS_tumor':
+    elif 'LiTS_tumor' in args.dataset:
         db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]),
                                    tumor_only=True)
@@ -45,10 +45,12 @@ def trainer_synapse(args, model, snapshot_path):
         random.seed(args.seed + worker_id)
 
     trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
-                             worker_init_fn=worker_init_fn)
+                             worker_init_fn=worker_init_fn, drop_last=True)
     if args.n_gpu > 1:
         model = nn.DataParallel(model)
     model.train()
+    if args.unfreeze_epoch:
+        model.freeze_backbone = True
     ce_loss = CrossEntropyLoss()
     dice_loss = DiceLoss(num_classes)
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
@@ -60,6 +62,11 @@ def trainer_synapse(args, model, snapshot_path):
     best_performance = 0.0
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
+        if epoch_num + 1 == args.unfreeze_epoch:
+            base_lr /= 10
+            for g in optimizer.param_groups:
+                g['lr'] = base_lr
+            logging.info('unfreezing backbone, reducing learning rate to {}'.format(base_lr))
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
             image_batch, label_batch = image_batch.cuda(), label_batch.cuda()

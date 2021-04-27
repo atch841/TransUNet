@@ -44,8 +44,14 @@ parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
 parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet'],
                     help='model to use')
-parser.add_argument('--is_pretrain', type=bool, default=False,
-                    help='load pretrained model or not')
+parser.add_argument('--is_pretrain', type=str, default='',
+                    help='pretrain model path')
+parser.add_argument('--pretrain_epoch', type=int, default=-1,
+                    help='epoch of loaded pretrained model')
+parser.add_argument('--unfreeze_epoch', type=int, default=0,
+                    help='epoch to unfreeze backbone')
+parser.add_argument('--pretrain_folder', type=str, default='',
+                    help='pretrained folder name')
 args = parser.parse_args()
 
 
@@ -85,6 +91,22 @@ if __name__ == "__main__":
             'num_classes': 2,
             'z_spacing': 1,
         },
+        'LiTS_tumor_50p': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_50p/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
+        'LiTS_tumor_20p': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_20p/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
     }
     args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
@@ -94,7 +116,9 @@ if __name__ == "__main__":
     args.z_spacing = dataset_config[dataset_name]['z_spacing']
     # args.is_pretrain = True
     args.exp = '{}_'.format(args.model) + dataset_name + str(args.img_size)
-    snapshot_path = "../model/{}/{}".format(args.exp, args.model)
+    snapshot_path = '../model/'
+    snapshot_path = snapshot_path + '{}/'.format(args.pretrain_folder) if args.pretrain_folder else snapshot_path
+    snapshot_path += "{}/{}".format(args.exp, args.model)
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
@@ -104,7 +128,9 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path+'_bs'+str(args.batch_size)
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 0.01 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
-    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=1234 else snapshot_path
+    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed != 1234 else snapshot_path
+    snapshot_path = snapshot_path + '_pe'+str(args.pretrain_epoch) if args.pretrain_epoch != -1 else snapshot_path
+    snapshot_path = snapshot_path + '_ue'+str(args.unfreeze_epoch) if args.unfreeze_epoch else snapshot_path
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
@@ -115,9 +141,12 @@ if __name__ == "__main__":
         if args.vit_name.find('R50') != -1:
             config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
         net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-        if args.is_pretrain:
+        if args.is_pretrain == 'official':
             print('loading pretrain')
             net.load_from(weights=np.load(config_vit.pretrained_path))
+        elif args.is_pretrain:
+            print('loading pretrain:', args.is_pretrain)
+            net.load_ptbb(args.is_pretrain)
     elif args.model == 'UNet':
         net = UNet(1, args.num_classes).cuda()
         if args.is_pretrain:
@@ -136,5 +165,6 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError('model not found!')
 
-    trainer = {'Synapse': trainer_synapse, 'LiTS': trainer_synapse, 'LiTS_tumor': trainer_synapse}
-    trainer[dataset_name](args, net, snapshot_path)
+    # trainer = {'Synapse': trainer_synapse, 'LiTS': trainer_synapse, 'LiTS_tumor': trainer_synapse}
+    # trainer[dataset_name](args, net, snapshot_path)
+    trainer_synapse(args, net, snapshot_path)

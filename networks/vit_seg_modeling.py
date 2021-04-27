@@ -381,11 +381,16 @@ class VisionTransformer(nn.Module):
             kernel_size=3,
         )
         self.config = config
+        self.freeze_backbone = False
 
     def forward(self, x):
         if x.size()[1] == 1:
             x = x.repeat(1,3,1,1)
-        x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
+        if self.freeze_backbone:
+            with torch.no_grad():
+                x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
+        else:
+            x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
         x = self.decoder(x, features)
         logits = self.segmentation_head(x)
         return logits
@@ -438,6 +443,13 @@ class VisionTransformer(nn.Module):
                 for bname, block in self.transformer.embeddings.hybrid_model.body.named_children():
                     for uname, unit in block.named_children():
                         unit.load_from(res_weight, n_block=bname, n_unit=uname)
+    def load_ptbb(self, pretrained_transformer_path):
+        checkpoint = torch.load(pretrained_transformer_path, map_location='cpu')
+        transformer_state_dict = {}
+        for k in checkpoint['model'].keys():
+            if 'transformer' in k:
+                transformer_state_dict[k.replace('transformer.', '')] = checkpoint['model'][k]
+        print(self.transformer.load_state_dict(transformer_state_dict))
 
 CONFIGS = {
     'ViT-B_16': configs.get_b16_config(),
