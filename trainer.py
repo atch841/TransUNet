@@ -106,6 +106,7 @@ def trainer_synapse(args, model, snapshot_path):
             model.train()
             writer.add_scalar('info/tumor_dice', tumor_dice, iter_num)
             if tumor_dice > best_performance:
+                best_performance = tumor_dice
                 save_mode_path = os.path.join(snapshot_path, 'best_model_ep' + str(epoch_num) + '.pth')
                 torch.save(model.state_dict(), save_mode_path)
                 logging.info("save model to {}".format(save_mode_path))
@@ -120,6 +121,10 @@ def trainer_synapse(args, model, snapshot_path):
             save_mode_path = os.path.join(snapshot_path, 'epoch_' + str(epoch_num) + '.pth')
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
+            if args.pretrain_epoch != -1:
+                logdir = snapshot_path[:snapshot_path.rfind('/')+1]
+                with open(logdir + 'log_all.txt', "a") as logfile:
+                    logfile.write(f'{args.pretrain_epoch}: {best_performance}\n')
             iterator.close()
             break
 

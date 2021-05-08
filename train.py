@@ -1,4 +1,5 @@
 import argparse
+from networks.deeplab import DeepLab
 from networks.denseunet import DenseUNet
 from datasets.dataset_synapse import LiTS_dataset, LiTS_tumor_dataset
 import logging
@@ -15,7 +16,7 @@ from trainer import trainer_synapse
 parser = argparse.ArgumentParser()
 parser.add_argument('--root_path', type=str,
                     default='../data/Synapse/train_npz', help='root dir for data')
-parser.add_argument('--dataset', type=str,
+parser.add_argument('--dataset', type=str,#
                     default='Synapse', help='experiment_name')
 parser.add_argument('--list_dir', type=str,
                     default='./lists/lists_Synapse', help='list dir')
@@ -25,14 +26,14 @@ parser.add_argument('--max_iterations', type=int,
                     default=30000, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int,
                     default=150, help='maximum epoch number to train')
-parser.add_argument('--batch_size', type=int,
+parser.add_argument('--batch_size', type=int,#
                     default=24, help='batch_size per gpu')
 parser.add_argument('--n_gpu', type=int, default=1, help='total gpu')
 parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
 parser.add_argument('--base_lr', type=float,  default=0.01,
                     help='segmentation network learning rate')
-parser.add_argument('--img_size', type=int,
+parser.add_argument('--img_size', type=int,#
                     default=224, help='input patch size of network input')
 parser.add_argument('--seed', type=int,
                     default=1234, help='random seed')
@@ -42,10 +43,10 @@ parser.add_argument('--vit_name', type=str,
                     default='R50-ViT-B_16', help='select one vit model')
 parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
-parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet'],
-                    help='model to use')
+parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet', 'deeplab'],
+                    help='model to use')#
 parser.add_argument('--is_pretrain', type=str, default='',
-                    help='pretrain model path')
+                    help='pretrain model path')#
 parser.add_argument('--pretrain_epoch', type=int, default=-1,
                     help='epoch of loaded pretrained model')
 parser.add_argument('--unfreeze_epoch', type=int, default=0,
@@ -107,6 +108,38 @@ if __name__ == "__main__":
             'num_classes': 2,
             'z_spacing': 1,
         },
+        'LiTS_tumor_10p': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_10p/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
+        'LiTS_tumor_1p': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_1p/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
+        'LiTS_tumor_5p_half': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_5p_half/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
+        'LiTS_tumor_1p_half': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/nas/train5_1p_half/',
+            'volume_path': '/home/viplab/nas/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
     }
     args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
@@ -162,6 +195,8 @@ if __name__ == "__main__":
             net = DenseUNet(args.num_classes, pretrained_encoder_uri='https://download.pytorch.org/models/densenet121-a639ec97.pth').cuda()
         else:
             net = DenseUNet(args.num_classes).cuda()
+    elif args.model == 'deeplab':
+        net = DeepLab(sync_bn=False, num_classes=args.num_classes).cuda()
     else:
         raise NotImplementedError('model not found!')
 
