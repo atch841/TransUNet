@@ -43,7 +43,7 @@ parser.add_argument('--vit_name', type=str,
                     default='R50-ViT-B_16', help='select one vit model')
 parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
-parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet', 'deeplab'],
+parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet', 'deeplab', 'deeplab_xception'],
                     help='model to use')#
 parser.add_argument('--is_pretrain', type=str, default='',
                     help='pretrain model path')#
@@ -197,6 +197,8 @@ if __name__ == "__main__":
             net = DenseUNet(args.num_classes).cuda()
     elif args.model == 'deeplab':
         net = DeepLab(sync_bn=False, num_classes=args.num_classes).cuda()
+    elif args.model == 'deeplab_xception':
+        net = DeepLab(sync_bn=False, num_classes=args.num_classes, backbone='xception', output_stride=8).cuda()
     else:
         raise NotImplementedError('model not found!')
 

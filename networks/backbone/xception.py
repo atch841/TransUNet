@@ -180,6 +180,8 @@ class AlignedXception(nn.Module):
             self._load_pretrained_model()
 
     def forward(self, x):
+        if x.size()[1] == 1:
+            x = x.repeat(1,3,1,1)
         # Entry flow
         x = self.conv1(x)
         x = self.bn1(x)
