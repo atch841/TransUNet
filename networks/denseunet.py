@@ -114,5 +114,6 @@ class DenseUNet(nn.Module):
         x = self.encoder(x)
         x = self.decoder(x)
         y = self.classifier(x)
-        return self.softmax(y)
+        # return self.softmax(y)
+        return y
         
