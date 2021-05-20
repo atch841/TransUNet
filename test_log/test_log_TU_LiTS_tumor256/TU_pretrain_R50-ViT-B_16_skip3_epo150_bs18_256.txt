@@ -1,4 +1,4 @@
-[09:13:18.224] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[09:13:18.224] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/data/stage1/test/', z_spacing=1)
 [09:13:18.224] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs18_256
 [09:13:18.228] 27 test iterations per epoch
 [09:13:35.789] idx 0 case volume-0 mean_dice 0.591778 mean_hd95 19.300039
@@ -30,6 +30,6 @@
 [09:19:15.465] idx 26 case volume-86 mean_dice 0.303625 mean_hd95 13.152946
 [09:19:15.500] Mean class 1 mean_dice 0.611058 mean_hd95 29.605518
 [09:19:15.500] Testing performance in best val model: mean_dice : 0.611058 mean_hd95 : 29.605518
-[09:35:43.521] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/nas/stage1/test/', z_spacing=1)
+[09:35:43.521] Namespace(Dataset=<class 'datasets.dataset_synapse.LiTS_tumor_dataset'>, base_lr=0.01, batch_size=18, dataset='LiTS_tumor', deterministic=1, exp='TU_LiTS_tumor256', img_size=256, is_pretrain=True, is_savenii=True, list_dir='./lists/lists_Synapse', max_epochs=150, max_iterations=30000, n_skip=3, num_classes=2, seed=1234, test_epoch=100, test_save_dir='../predictions', vit_name='R50-ViT-B_16', vit_patches_size=16, volume_path='/home/viplab/data/stage1/test/', z_spacing=1)
 [09:35:43.521] TU_pretrain_R50-ViT-B_16_skip3_epo150_bs18_256
 [09:35:43.523] 27 test iterations per epoch

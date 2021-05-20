@@ -81,6 +81,8 @@ class LiTS_dataset(Dataset):
         self.split = split
         self.sample_list_ct = os.listdir(base_dir + 'ct/')
         self.sample_list_seg = os.listdir(base_dir + 'seg/')
+        self.sample_list_ct.sort()
+        self.sample_list_seg.sort()
         self.data_dir = base_dir
         self.tumor_only = tumor_only
 

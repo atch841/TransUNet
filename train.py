@@ -78,64 +78,64 @@ if __name__ == "__main__":
         },
         'LiTS': {
             'Dataset': LiTS_dataset,
-            'root_path': '/home/viplab/nas/train5/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
             'z_spacing': 1,
         },
         'LiTS_tumor': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_50p': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_50p/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_50p/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_20p': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_20p/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_20p/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_10p': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_10p/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_10p/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_1p': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_1p/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_1p/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_5p_half': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_5p_half/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_5p_half/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
         },
         'LiTS_tumor_1p_half': {
             'Dataset': LiTS_tumor_dataset,
-            'root_path': '/home/viplab/nas/train5_1p_half/',
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'root_path': '/home/viplab/data/train5_1p_half/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     args.z_spacing = dataset_config[dataset_name]['z_spacing']
     # args.is_pretrain = True
     args.exp = '{}_'.format(args.model) + dataset_name + str(args.img_size)
-    snapshot_path = '../model/'
+    snapshot_path = '/home/viplab/data/model/'
     snapshot_path = snapshot_path + '{}/'.format(args.pretrain_folder) if args.pretrain_folder else snapshot_path
     snapshot_path += "{}/{}".format(args.exp, args.model)
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
@@ -184,7 +184,7 @@ if __name__ == "__main__":
         net = UNet(1, args.num_classes).cuda()
         if args.is_pretrain:
             print('loading pretrain')
-            state_dict = torch.load('/home/viplab/nas/unet_carvana_scale1_epoch5.pth')
+            state_dict = torch.load('/home/viplab/data/unet_carvana_scale1_epoch5.pth')
             model_dict = net.state_dict()
             pretrained_state = { k:v for k,v in state_dict.items() \
                                 if k in model_dict and v.size() == model_dict[k].size() }

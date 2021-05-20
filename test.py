@@ -67,14 +67,14 @@ if __name__ == "__main__":
         },
         'LiTS': {
             'Dataset': LiTS_dataset,
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
             'z_spacing': 1,
         },
         'LiTS_tumor': {
             'Dataset': LiTS_tumor_dataset,
-            'volume_path': '/home/viplab/nas/stage1/test/',
+            'volume_path': '/home/viplab/data/stage1/test/',
             'list_dir': './lists/lists_Synapse',
             'num_classes': 2,
             'z_spacing': 1,
