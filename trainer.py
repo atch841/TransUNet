@@ -64,19 +64,28 @@ def trainer_synapse(args, model, snapshot_path):
     for epoch_num in iterator:
         if epoch_num + 1 == args.unfreeze_epoch:
             base_lr /= 10
+            model.freeze_backbone = False
             for g in optimizer.param_groups:
                 g['lr'] = base_lr
             logging.info('unfreezing backbone, reducing learning rate to {}'.format(base_lr))
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
             image_batch, label_batch = image_batch.cuda(), label_batch.cuda()
-            outputs = model(image_batch)
+            aux_outputs = None
+            if args.model == 'deeplab_resnest':
+                outputs, aux_outputs = model(image_batch)
+            else:
+                outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             if args.dataset == 'LiTS_tumor':
-                loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
+                loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=args.softmax)
             else:
-                loss_dice = dice_loss(outputs, label_batch, softmax=True)
+                loss_dice = dice_loss(outputs, label_batch, softmax=args.softmax)
             loss = 0.5 * loss_ce + 0.5 * loss_dice
+            if aux_outputs != None:
+                loss_ce_aux = ce_loss(aux_outputs, label_batch[:].long())
+                loss_dice_aux = dice_loss(aux_outputs, label_batch, softmax=True)
+                loss += 0.4 * (0.5 * loss_ce_aux + 0.5 * loss_dice_aux)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -104,6 +113,8 @@ def trainer_synapse(args, model, snapshot_path):
         if (epoch_num + 1) % eval_interval == 0:
             tumor_dice = inference(args, model)
             model.train()
+            if args.model == 'deeplab_resnest':
+                model.mode = 'TRAIN'
             writer.add_scalar('info/tumor_dice', tumor_dice, iter_num)
             if tumor_dice > best_performance:
                 best_performance = tumor_dice
