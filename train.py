@@ -208,6 +208,8 @@ if __name__ == "__main__":
         MODEL_CFG = MODEL_CFG.copy()
         MODEL_CFG.update({'num_classes':args.num_classes})
         net = Deeplabv3Plus(MODEL_CFG, mode='TRAIN').cuda()
+        if args.is_pretrain: # resume
+            net.load_state_dict(torch.load(args.is_pretrain))
     else:
         raise NotImplementedError('model not found!')
 
