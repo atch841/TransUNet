@@ -36,7 +36,7 @@ class DiceLoss(nn.Module):
         if weight is None:
             weight = [1] * self.n_classes
         assert inputs.size() == target.size(), 'predict {} & target {} shape do not match'.format(inputs.size(), target.size())
-        assert inputs.max() <= 1 and inputs.min() >= 0 and target.max() <= 1 and target.min() >= 0, '{} {} {} {}'.format(inputs.max(), inputs.min(), target.max(), target.min())
+        # assert inputs.max() <= 1 and inputs.min() >= 0 and target.max() <= 1 and target.min() >= 0, '{} {} {} {}'.format(inputs.max(), inputs.min(), target.max(), target.min())
         # class_wise_dice = []
         loss = 0.0
         for i in range(0, self.n_classes):
