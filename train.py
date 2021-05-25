@@ -153,7 +153,7 @@ if __name__ == "__main__":
     args.z_spacing = dataset_config[dataset_name]['z_spacing']
     # args.is_pretrain = True
     args.exp = '{}_'.format(args.model) + dataset_name + str(args.img_size)
-    snapshot_path = '/home/viplab/data/model/'
+    snapshot_path = '/home/viplab/nas/model/'
     snapshot_path = snapshot_path + '{}/'.format(args.pretrain_folder) if args.pretrain_folder else snapshot_path
     snapshot_path += "{}/{}".format(args.exp, args.model)
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
