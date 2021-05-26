@@ -15,7 +15,7 @@ from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 
 
 
-def inference(args, model, test_save_path=None):
+def inference(args, model, epoch, test_save_path=None):
     # db_test = args.Dataset(base_dir=args.volume_path, split="test_vol", list_dir=args.list_dir)
     db_test = args.Dataset(base_dir=args.volume_path, split="test_vol")
     testloader = DataLoader(db_test, batch_size=1, shuffle=False, num_workers=1)
@@ -33,7 +33,7 @@ def inference(args, model, test_save_path=None):
         logging.info('idx %d case %s mean_dice %f mean_hd95 %f' % (i_batch, case_name, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
     metric_list = metric_list / len(db_test)
     for i in range(1, args.num_classes):
-        logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i-1][0], metric_list[i-1][1]))
+        logging.info('%d Mean class %d mean_dice %f mean_hd95 %f' % (epoch, i, metric_list[i-1][0], metric_list[i-1][1]))
     performance = np.mean(metric_list, axis=0)[0]
     mean_hd95 = np.mean(metric_list, axis=0)[1]
     logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))

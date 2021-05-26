@@ -111,7 +111,7 @@ def trainer_synapse(args, model, snapshot_path):
 
         eval_interval = 5
         if (epoch_num + 1) % eval_interval == 0:
-            tumor_dice = inference(args, model)
+            tumor_dice = inference(args, model, epoch_num + 1)
             model.train()
             if args.model == 'deeplab_resnest':
                 model.mode = 'TRAIN'
