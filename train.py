@@ -47,8 +47,6 @@ parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
 parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet', 'deeplab', 'deeplab_xception', 'deeplab_resnest'],
                     help='model to use')#
-parser.add_argument('--softmax', action="store_true",
-                    help='whether to use softmax for dice loss during training')#
 parser.add_argument('--is_pretrain', type=str, default='',
                     help='pretrain model path')#
 parser.add_argument('--pretrain_epoch', type=int, default=-1,
@@ -158,7 +156,6 @@ if __name__ == "__main__":
     snapshot_path += "{}/{}".format(args.exp, args.model)
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
-    snapshot_path = snapshot_path + '_softmax' if args.softmax else snapshot_path
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
     snapshot_path = snapshot_path + '_vitpatch' + str(args.vit_patches_size) if args.vit_patches_size!=16 else snapshot_path
     snapshot_path = snapshot_path+'_'+str(args.max_iterations)[0:2]+'k' if args.max_iterations != 30000 else snapshot_path

@@ -78,9 +78,9 @@ def trainer_synapse(args, model, snapshot_path):
                 outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             if args.dataset == 'LiTS_tumor':
-                loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=args.softmax)
+                loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
             else:
-                loss_dice = dice_loss(outputs, label_batch, softmax=args.softmax)
+                loss_dice = dice_loss(outputs, label_batch, softmax=True)
             loss = 0.5 * loss_ce + 0.5 * loss_dice
             if aux_outputs != None:
                 loss_ce_aux = ce_loss(aux_outputs, label_batch[:].long())
