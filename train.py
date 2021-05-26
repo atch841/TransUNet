@@ -179,6 +179,10 @@ if __name__ == "__main__":
         if args.is_pretrain == 'official':
             print('loading pretrain')
             net.load_from(weights=np.load(config_vit.pretrained_path))
+        elif args.is_pretrain == '1p':
+            print("loading 1p")
+            checkpoint = torch.load('/home/viplab/data/TU_LiTS_tumor_1p_half256_best_model_ep244.pth', map_location='cpu')
+            net.load_state_dict(checkpoint)
         elif args.is_pretrain:
             print('loading pretrain:', args.is_pretrain)
             net.load_ptbb(args.is_pretrain)
