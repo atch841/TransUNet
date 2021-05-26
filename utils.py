@@ -72,6 +72,8 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             net.eval()
             with torch.no_grad():
                 outputs = net(input)
+                if type(outputs) == tuple: # for deeplab_resnest
+                    outputs = outputs[0]
                 out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
                 out = out.cpu().detach().numpy()
                 if x != patch_size[0] or y != patch_size[1]:
