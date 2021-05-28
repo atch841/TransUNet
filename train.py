@@ -47,6 +47,8 @@ parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
 parser.add_argument('--model', type=str, default='TU', choices=['TU', 'UNet', 'denseunet', 'deeplab', 'deeplab_xception', 'deeplab_resnest'],
                     help='model to use')#
+parser.add_argument('--norm', type=str, default='batchnorm', choices=['batchnorm', 'groupnorm'],
+                    help='norm to use')#
 parser.add_argument('--is_pretrain', type=str, default='',
                     help='pretrain model path')#
 parser.add_argument('--pretrain_epoch', type=int, default=-1,
@@ -154,6 +156,7 @@ if __name__ == "__main__":
     snapshot_path = '/home/viplab/nas/model/'
     snapshot_path = snapshot_path + '{}/'.format(args.pretrain_folder) if args.pretrain_folder else snapshot_path
     snapshot_path += "{}/{}".format(args.exp, args.model)
+    snapshot_path = snapshot_path + args.norm if args.model == "deeplab_resnest" else snapshot_path
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
@@ -208,6 +211,8 @@ if __name__ == "__main__":
     elif args.model == 'deeplab_resnest':
         MODEL_CFG = MODEL_CFG.copy()
         MODEL_CFG.update({'num_classes':args.num_classes})
+        if args.norm == 'groupnorm':
+            MODEL_CFG.update({'norm_cfg': {'type': 'groupnorm', 'opts': {}}})
         net = Deeplabv3Plus(MODEL_CFG, mode='TRAIN').cuda()
         if args.is_pretrain: # resume
             net.load_state_dict(torch.load(args.is_pretrain))

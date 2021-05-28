@@ -25,6 +25,16 @@ BatchNorm2d = nn.BatchNorm2d
 '''batchnorm3d'''
 BatchNorm3d = nn.BatchNorm3d
 
+class groupnorm_wrapper(nn.Module):
+    def __init__(self, channels):
+        super().__init__()
+        self.gn = nn.GroupNorm(1, channels)
+    def forward(self, x):
+        x = self.gn(x)
+        return x
+
+GroupNorm = groupnorm_wrapper
+
 '''build normalization'''
 def BuildNormalization(norm_type='batchnorm2d', instanced_params=(0, {}), only_get_all_supported=False, **kwargs):
     supported_dict = {
@@ -32,6 +42,7 @@ def BuildNormalization(norm_type='batchnorm2d', instanced_params=(0, {}), only_g
         'batchnorm1d': BatchNorm1d,
         'batchnorm2d': BatchNorm2d,
         'batchnorm3d': BatchNorm3d,
+        'groupnorm': GroupNorm,
         # 'syncbatchnorm': TORCHSyncBatchNorm,
         # 'syncbatchnorm_mmcv': MMCVSyncBatchNorm,
     }
