@@ -32,6 +32,10 @@ def trainer_synapse(args, model, snapshot_path):
     if args.dataset == 'LiTS':
         db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
+    elif args.dataset == 'LiTS_tumor_pseudo':
+        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+                                   [RandomGenerator(output_size=[args.img_size, args.img_size])]),
+                                   tumor_only=True, pseudo=True)
     elif 'LiTS_tumor' in args.dataset:
         db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]),
@@ -51,8 +55,8 @@ def trainer_synapse(args, model, snapshot_path):
     model.train()
     if args.unfreeze_epoch:
         model.freeze_backbone = True
-    ce_loss = CrossEntropyLoss()
-    dice_loss = DiceLoss(num_classes)
+    ce_loss = CrossEntropyLoss(weight=torch.tensor([1.0, 389.0]).cuda(), ignore_index=255)
+    # dice_loss = DiceLoss(num_classes)
     optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     writer = SummaryWriter(snapshot_path + '/log')
     iter_num = 0
@@ -77,15 +81,15 @@ def trainer_synapse(args, model, snapshot_path):
             else:
                 outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
-            if args.dataset == 'LiTS_tumor':
-                loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
-            else:
-                loss_dice = dice_loss(outputs, label_batch, softmax=True)
-            loss = 0.5 * loss_ce + 0.5 * loss_dice
+            # if args.dataset == 'LiTS_tumor':
+            #     loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
+            # else:
+            #     loss_dice = dice_loss(outputs, label_batch, softmax=True)
+            loss = loss_ce #+ 0.5 * loss_dice
             if aux_outputs != None:
                 loss_ce_aux = ce_loss(aux_outputs, label_batch[:].long())
-                loss_dice_aux = dice_loss(aux_outputs, label_batch, softmax=True)
-                loss += 0.4 * (0.5 * loss_ce_aux + 0.5 * loss_dice_aux)
+                # loss_dice_aux = dice_loss(aux_outputs, label_batch, softmax=True)
+                loss += 0.4 * loss_ce_aux 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()

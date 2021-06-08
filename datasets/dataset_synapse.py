@@ -40,6 +40,8 @@ class RandomGenerator(object):
         x, y = image.shape
         if x != self.output_size[0] or y != self.output_size[1]:
             image = zoom(image, (self.output_size[0] / x, self.output_size[1] / y), order=3)  # why not 3?
+        x, y = label.shape
+        if x != self.output_size[0] or y != self.output_size[1]:
             label = zoom(label, (self.output_size[0] / x, self.output_size[1] / y), order=0)
         image = torch.from_numpy(image.astype(np.float32)).unsqueeze(0)
         label = torch.from_numpy(label.astype(np.float32))
@@ -76,11 +78,15 @@ class Synapse_dataset(Dataset):
         return sample
 
 class LiTS_dataset(Dataset):
-    def __init__(self, base_dir, split, transform=None, tumor_only=False):
+    def __init__(self, base_dir, split, transform=None, tumor_only=False, pseudo=False):
         self.transform = transform  # using transform in torch!
         self.split = split
+        self.pseudo = pseudo
         self.sample_list_ct = os.listdir(base_dir + 'ct/')
-        self.sample_list_seg = os.listdir(base_dir + 'seg/')
+        if pseudo:
+            self.sample_list_seg = os.listdir(base_dir + 'pseudo/')
+        else:
+            self.sample_list_seg = os.listdir(base_dir + 'seg/')
         self.sample_list_ct.sort()
         self.sample_list_seg.sort()
         self.data_dir = base_dir
@@ -91,8 +97,14 @@ class LiTS_dataset(Dataset):
 
     def __getitem__(self, idx):
         if self.split == "train":
-            image = np.load(self.data_dir + 'ct/' +  self.sample_list_ct[idx])
-            label = np.load(self.data_dir + 'seg/' +  self.sample_list_seg[idx])
+            image_path = self.data_dir + 'ct/' +  self.sample_list_ct[idx]
+            if self.pseudo:
+                seg_path = self.data_dir + 'pseudo/' +  self.sample_list_seg[idx]
+            else:
+                seg_path = self.data_dir + 'seg/' +  self.sample_list_seg[idx]
+            assert seg_path[seg_path.rfind('/') + 1:].replace('seg', 'ct') == image_path[image_path.rfind('/') + 1:], (image_path, seg_path)
+            image = np.load(image_path)
+            label = np.load(seg_path)
         else:
             ct = sitk.ReadImage(self.data_dir + 'ct/' + self.sample_list_ct[idx], sitk.sitkInt16)
             seg = sitk.ReadImage(self.data_dir + 'seg/' + self.sample_list_seg[idx], sitk.sitkUInt8)
@@ -105,7 +117,7 @@ class LiTS_dataset(Dataset):
             image = ndimage.zoom(image, (1, 0.5, 0.5), order=3)
             label = ndimage.zoom(label, (1, 0.5, 0.5), order=0)
 
-        if self.tumor_only:
+        if not self.pseudo and self.tumor_only:
             label = (label == 2).astype('float32')
 
         sample = {'image': image, 'label': label}
