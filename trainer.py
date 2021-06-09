@@ -29,19 +29,13 @@ def trainer_synapse(args, model, snapshot_path):
     # db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
     #                            transform=transforms.Compose(
     #                                [RandomGenerator(output_size=[args.img_size, args.img_size])]))
-    if args.dataset == 'LiTS':
-        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
-                                   [RandomGenerator(output_size=[args.img_size, args.img_size])]))
-    elif args.dataset == 'LiTS_tumor_pseudo':
-        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+    db_train = LiTS_dataset(base_dir='/home/viplab/data/train5/', split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]),
                                    tumor_only=True, pseudo=True)
-    elif 'LiTS_tumor' in args.dataset:
-        db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+    db_train_1p = LiTS_dataset(base_dir='/home/viplab/data/train5_1p_half/', split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]),
                                    tumor_only=True)
-    else:
-        raise NotImplementedError('dataset not found!')
+    
 
     print("The length of train set is: {}".format(len(db_train)))
 
@@ -50,6 +44,8 @@ def trainer_synapse(args, model, snapshot_path):
 
     trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
                              worker_init_fn=worker_init_fn, drop_last=True)
+    trainloader_1p = DataLoader(db_train_1p, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
+                             worker_init_fn=worker_init_fn, drop_last=True)
     if args.n_gpu > 1:
         model = nn.DataParallel(model)
     model.train()
@@ -57,61 +53,25 @@ def trainer_synapse(args, model, snapshot_path):
         model.freeze_backbone = True
     ce_loss = CrossEntropyLoss(weight=torch.tensor([1.0, 389.0]).cuda(), ignore_index=255)
     # dice_loss = DiceLoss(num_classes)
-    optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
+    optimizer = optim.SGD(model.parameters(), lr=base_lr * args.pseudo_lr, momentum=0.9, weight_decay=0.0001)
+    optimizer_1p = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     writer = SummaryWriter(snapshot_path + '/log')
     iter_num = 0
+    iter_num_1p = 0
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * len(trainloader)  # max_epoch = max_iterations // len(trainloader) + 1
+    max_iterations_1p = args.max_epochs * len(trainloader_1p)  # max_epoch = max_iterations // len(trainloader) + 1
     logging.info("{} iterations per epoch. {} max iterations ".format(len(trainloader), max_iterations))
     best_performance = 0.0
+    inference(args, model, -1)
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
-        if epoch_num + 1 == args.unfreeze_epoch:
-            base_lr /= 10
-            model.freeze_backbone = False
-            for g in optimizer.param_groups:
-                g['lr'] = base_lr
-            logging.info('unfreezing backbone, reducing learning rate to {}'.format(base_lr))
-        for i_batch, sampled_batch in enumerate(trainloader):
-            image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
-            image_batch, label_batch = image_batch.cuda(), label_batch.cuda()
-            aux_outputs = None
-            if args.model == 'deeplab_resnest':
-                outputs, aux_outputs = model(image_batch)
-            else:
-                outputs = model(image_batch)
-            loss_ce = ce_loss(outputs, label_batch[:].long())
-            # if args.dataset == 'LiTS_tumor':
-            #     loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
-            # else:
-            #     loss_dice = dice_loss(outputs, label_batch, softmax=True)
-            loss = loss_ce #+ 0.5 * loss_dice
-            if aux_outputs != None:
-                loss_ce_aux = ce_loss(aux_outputs, label_batch[:].long())
-                # loss_dice_aux = dice_loss(aux_outputs, label_batch, softmax=True)
-                loss += 0.4 * loss_ce_aux 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            lr_ = base_lr * (1.0 - iter_num / max_iterations) ** 0.9
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = lr_
-
-            iter_num = iter_num + 1
-            writer.add_scalar('info/lr', lr_, iter_num)
-            writer.add_scalar('info/total_loss', loss, iter_num)
-            writer.add_scalar('info/loss_ce', loss_ce, iter_num)
-
-            logging.info('epoch %d iteration %d : loss : %f, loss_ce: %f' % (epoch_num, iter_num, loss.item(), loss_ce.item()))
-
-            if iter_num % 20 == 0:
-                image = image_batch[1, 0:1, :, :]
-                image = (image - image.min()) / (image.max() - image.min())
-                writer.add_image('train/Image', image, iter_num)
-                outputs = torch.argmax(torch.softmax(outputs, dim=1), dim=1, keepdim=True)
-                writer.add_image('train/Prediction', outputs[1, ...] * 50, iter_num)
-                labs = label_batch[1, ...].unsqueeze(0) * 50
-                writer.add_image('train/GroundTruth', labs, iter_num)
+        model.train()
+        iter_num = train_epoch(trainloader, args, model, ce_loss, optimizer, base_lr * args.pseudo_lr, 
+                        iter_num, max_iterations, writer, epoch_num)
+        iter_num_1p = train_epoch(trainloader_1p, args, model, ce_loss, optimizer_1p, base_lr, 
+                        iter_num_1p, max_iterations_1p, writer, epoch_num)
+            
 
         eval_interval = 5
         if (epoch_num + 1) % eval_interval == 0:
@@ -145,3 +105,38 @@ def trainer_synapse(args, model, snapshot_path):
 
     writer.close()
     return "Training Finished!"
+
+def train_epoch(trainloader, args, model, ce_loss, optimizer, base_lr, iter_num,
+             max_iterations, writer, epoch_num):
+    for i_batch, sampled_batch in enumerate(trainloader):
+        image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
+        image_batch, label_batch = image_batch.cuda(), label_batch.cuda()
+        aux_outputs = None
+        if args.model == 'deeplab_resnest':
+            outputs, aux_outputs = model(image_batch)
+        else:
+            outputs = model(image_batch)
+        loss_ce = ce_loss(outputs, label_batch[:].long())
+        # if args.dataset == 'LiTS_tumor':
+        #     loss_dice = dice_loss(outputs, label_batch, weight=[1, 1], softmax=True)
+        # else:
+        #     loss_dice = dice_loss(outputs, label_batch, softmax=True)
+        loss = loss_ce #+ 0.5 * loss_dice
+        if aux_outputs != None:
+            loss_ce_aux = ce_loss(aux_outputs, label_batch[:].long())
+            # loss_dice_aux = dice_loss(aux_outputs, label_batch, softmax=True)
+            loss += 0.4 * loss_ce_aux 
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        lr_ = base_lr * (1.0 - iter_num / max_iterations) ** 0.9
+        for param_group in optimizer.param_groups:
+            param_group['lr'] = lr_
+
+        iter_num = iter_num + 1
+        writer.add_scalar('info/lr', lr_, iter_num)
+        writer.add_scalar('info/total_loss', loss, iter_num)
+        writer.add_scalar('info/loss_ce', loss_ce, iter_num)
+
+        logging.info('epoch %d iteration %d : loss : %f, loss_ce: %f' % (epoch_num, iter_num, loss.item(), loss_ce.item()))
+    return iter_num

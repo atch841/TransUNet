@@ -35,6 +35,8 @@ parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
 parser.add_argument('--base_lr', type=float,  default=0.01,
                     help='segmentation network learning rate')
+parser.add_argument('--pseudo_lr', type=float,  default=0.01,
+                    help='pseudo network learning rate')
 parser.add_argument('--img_size', type=int,#
                     default=224, help='input patch size of network input')
 parser.add_argument('--seed', type=int,
@@ -173,6 +175,7 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path + '_epo' +str(args.max_epochs) if args.max_epochs != 30 else snapshot_path
     snapshot_path = snapshot_path+'_bs'+str(args.batch_size)
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 0.01 else snapshot_path
+    snapshot_path = snapshot_path + '_plr' + str(args.pseudo_lr) if args.pseudo_lr != 0.01 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
     snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed != 1234 else snapshot_path
     snapshot_path = snapshot_path + '_pe'+str(args.pretrain_epoch) if args.pretrain_epoch != -1 else snapshot_path
@@ -223,6 +226,7 @@ if __name__ == "__main__":
             MODEL_CFG.update({'norm_cfg': {'type': 'groupnorm', 'opts': {}}})
         net = Deeplabv3Plus(MODEL_CFG, mode='TRAIN').cuda()
         if args.is_pretrain: # resume
+            print('loading', args.is_pretrain)
             net.load_state_dict(torch.load(args.is_pretrain))
     else:
         raise NotImplementedError('model not found!')
