@@ -67,6 +67,8 @@ def trainer_synapse(args, model, snapshot_path):
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
         model.train()
+        if args.model == 'deeplab_resnest':
+            model.mode = 'TRAIN'
         iter_num = train_epoch(trainloader, args, model, ce_loss, optimizer, base_lr * args.pseudo_lr, 
                         iter_num, max_iterations, writer, epoch_num)
         iter_num_1p = train_epoch(trainloader_1p, args, model, ce_loss, optimizer_1p, base_lr, 
