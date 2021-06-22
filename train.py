@@ -215,7 +215,20 @@ if __name__ == "__main__":
             MODEL_CFG.update({'norm_cfg': {'type': 'groupnorm', 'opts': {}}})
         net = Deeplabv3Plus(MODEL_CFG, mode='TRAIN').cuda()
         if args.is_pretrain: # resume
-            net.load_state_dict(torch.load(args.is_pretrain))
+            state_dict = torch.load(args.is_pretrain)
+            print('loading', args.is_pretrain)
+            if 'model' in state_dict.keys():
+                state_dict = state_dict['model']
+                new_state_dict = {}
+                for k in state_dict.keys():
+                    k_new = k
+                    if k.startswith('module.'):
+                        k_new = k.replace('module.', "")
+                    new_state_dict[k_new] = state_dict[k]
+                r = net.load_state_dict(new_state_dict, strict=False)
+                print(r)
+            else:
+                net.load_state_dict(state_dict)
     else:
         raise NotImplementedError('model not found!')
 
