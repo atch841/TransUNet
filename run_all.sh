@@ -1,6 +1,6 @@
 set -x
 folder=output1
-for ep in 20 40 60 100 150 200 
+for ep in 200 250 300 350 400
 
 do
 
