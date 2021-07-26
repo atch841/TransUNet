@@ -144,6 +144,14 @@ if __name__ == "__main__":
             'num_classes': 2,
             'z_spacing': 1,
         },
+        'LiTS_tumor_1p_half_08': {
+            'Dataset': LiTS_tumor_dataset,
+            'root_path': '/home/viplab/data/train5_1p_half_08/',
+            'volume_path': '/home/viplab/data/stage1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
     }
     args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
