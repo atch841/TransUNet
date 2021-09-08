@@ -160,6 +160,14 @@ if __name__ == "__main__":
             'num_classes': 2,
             'z_spacing': 1,
         },
+        'KiTS_tumor': {
+            'Dataset': KiTS_tumor_dataset,
+            'root_path': '/home/viplab/data/kits_train1/',
+            'volume_path': '/home/viplab/data/kits_vols1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
     }
     args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
