@@ -3,7 +3,7 @@ from networks.deeplab import DeepLab
 from networks.denseunet import DenseUNet
 from networks.ssseg.deeplabv3plus import Deeplabv3Plus
 from networks.ssseg.config import MODEL_CFG
-from datasets.dataset_synapse import LiTS_dataset, LiTS_tumor_dataset
+from datasets.dataset_synapse import LiTS_dataset, LiTS_tumor_dataset, KiTS_dataset, KiTS_tumor_dataset
 import logging
 from networks.unet_model import UNet
 import os
@@ -152,6 +152,14 @@ if __name__ == "__main__":
             'num_classes': 2,
             'z_spacing': 1,
         },
+        'KiTS_tumor_1p_half': {
+            'Dataset': KiTS_tumor_dataset,
+            'root_path': '/home/viplab/data/kits_train1_1p_half/',
+            'volume_path': '/home/viplab/data/kits_vols1/test/',
+            'list_dir': './lists/lists_Synapse',
+            'num_classes': 2,
+            'z_spacing': 1,
+        },
     }
     args.Dataset = dataset_config[dataset_name]['Dataset']
     args.num_classes = dataset_config[dataset_name]['num_classes']
@@ -236,7 +244,8 @@ if __name__ == "__main__":
                 r = net.load_state_dict(new_state_dict, strict=False)
                 print(r)
             else:
-                net.load_state_dict(state_dict)
+                r = net.load_state_dict(state_dict)
+                print(r)
     else:
         raise NotImplementedError('model not found!')
 

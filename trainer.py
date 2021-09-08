@@ -17,7 +17,7 @@ from torchvision import transforms
 from inference import inference
 
 def trainer_synapse(args, model, snapshot_path):
-    from datasets.dataset_synapse import Synapse_dataset, LiTS_dataset, RandomGenerator
+    from datasets.dataset_synapse import Synapse_dataset, LiTS_dataset, KiTS_dataset, RandomGenerator
     logging.basicConfig(filename=snapshot_path + "/log.txt", level=logging.INFO,
                         format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -34,6 +34,10 @@ def trainer_synapse(args, model, snapshot_path):
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
     elif 'LiTS_tumor' in args.dataset:
         db_train = LiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
+                                   [RandomGenerator(output_size=[args.img_size, args.img_size])]),
+                                   tumor_only=True)
+    elif 'KiTS_tumor' in args.dataset:
+        db_train = KiTS_dataset(base_dir=args.root_path, split='train', transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]),
                                    tumor_only=True)
     else:
